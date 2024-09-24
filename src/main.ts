@@ -14,6 +14,7 @@ async function main() {
   console.log("q/z: move up/down");
   console.log("e/r: open/close clamp");
   console.log("g: goto (x,y,z)");
+  console.log("u: get status");
   console.log("x: exit");
 
   try {
@@ -67,6 +68,14 @@ async function main() {
                 console.log("Invalid coordinates");
               }
             });
+            break;
+          case "u":
+            try {
+              const status = await robot.getStatus();
+              console.log("Current status:", status);
+            } catch (error) {
+              console.error("Error getting status:", error);
+            }
             break;
           case "x":
             rl.close();
