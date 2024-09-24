@@ -18,7 +18,7 @@ async function main() {
         console.log('Clamp opened');
 
         // Move to a specific position
-        await robot.sendCommand(235, 0, 234, 3.14, 0.25);
+        await robot.sendCommand(235, 0, 234, 1, 0.25);
         console.log('New position after absolute move:', robot.getPosition());
 
         // Close the clamp
