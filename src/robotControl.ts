@@ -69,7 +69,7 @@ export class RobotControl extends EventEmitter {
   }
 
   async getStatus(): Promise<RobotStatus> {
-    const statusCommand = JSON.stringify({ T: 105 });
+    const statusCommand = JSON.stringify({ T: 105 }) + "\n";
     return new Promise((resolve, reject) => {
       this.serialPort.write(statusCommand, (err) => {
         if (err) {
