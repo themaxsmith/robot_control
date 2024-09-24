@@ -104,4 +104,37 @@ export class RobotControl {
     getTorqueValues(): { torB: number; torS: number; torE: number; torH: number } {
         return { torB: this.torB, torS: this.torS, torE: this.torE, torH: this.torH };
     }
+
+    async moveRelative(dx: number, dy: number, dz: number, spd: number): Promise<void> {
+        const newX = this.x + dx;
+        const newY = this.y + dy;
+        const newZ = this.z + dz;
+        await this.sendCommand(newX, newY, newZ, this.t, spd);
+    }
+
+    async openClamp(): Promise<void> {
+        const command = JSON.stringify({ T: 106, V: 1 });
+        return new Promise((resolve, reject) => {
+            this.serialPort.write(command, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    async closeClamp(): Promise<void> {
+        const command = JSON.stringify({ T: 106, V: 0 });
+        return new Promise((resolve, reject) => {
+            this.serialPort.write(command, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
 }
