@@ -184,6 +184,11 @@ export class RobotControl extends EventEmitter {
     return this.sendCommand(this.x, this.y, this.z, 0, 0.25);
   }
 
+  async openClampRelative(amount: number): Promise<void> {
+    const newT = Math.min(Math.max(this.t + amount, 0), 1);
+    return this.sendCommand(this.x, this.y, this.z, newT, 0.25);
+  }
+
   async goto(x: number, y: number, z: number, spd: number): Promise<void> {
     return this.sendCommand(x, y, z, this.t, spd);
   }

@@ -13,6 +13,7 @@ async function main() {
   console.log("a/d: move left/right");
   console.log("q/z: move up/down");
   console.log("e/r: open/close clamp");
+  console.log("f: open clamp relative");
   console.log("g: goto (x,y,z)");
   console.log("u: get status");
   console.log("x: exit");
@@ -57,6 +58,17 @@ async function main() {
           case "r":
             await robot.closeClamp();
             console.log("Clamp closed");
+            break;
+          case "f":
+            rl.question("Enter relative clamp opening amount (-1 to 1): ", async (answer) => {
+              const amount = parseFloat(answer);
+              if (!isNaN(amount) && amount >= -1 && amount <= 1) {
+                await robot.openClampRelative(amount);
+                console.log(`Clamp opened relatively by ${amount}`);
+              } else {
+                console.log("Invalid amount. Please enter a number between -1 and 1.");
+              }
+            });
             break;
           case "g":
             rl.question("Enter x y z (space-separated): ", async (answer) => {
