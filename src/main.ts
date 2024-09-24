@@ -1,40 +1,78 @@
 import { RobotControl } from './robotControl';
+import * as readline from 'readline';
 
 async function main() {
     const robot = new RobotControl('/dev/ttyUSB0'); // Adjust the port name as needed
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    console.log('Robot Control:');
+    console.log('w/s: move forward/backward');
+    console.log('a/d: move left/right');
+    console.log('q/z: move up/down');
+    console.log('e/r: open/close clamp');
+    console.log('x: exit');
 
     try {
-        const initialStatus = await robot.getStatus();
-        console.log('Initial status:', initialStatus);
+        await robot.getStatus();
         console.log('Initial position:', robot.getPosition());
-        console.log('Initial torque values:', robot.getTorqueValues());
 
-        // Move relative to current position
-        await robot.moveRelative({ dx: 10, dy: 20, dz: 30, spd: 0.25 });
-        console.log('New position after relative move:', robot.getPosition());
+        rl.on('line', async (input) => {
+            const key = input.toLowerCase();
+            const moveDistance = 10; // Adjust this value as needed
+            const moveSpeed = 0.25; // Adjust this value as needed
 
-        // Move only in x direction
-        await robot.moveRelative({ dx: 15, spd: 0.25 });
-        console.log('New position after moving only in x:', robot.getPosition());
+            try {
+                switch (key) {
+                    case 'w':
+                        await robot.moveRelative({ dy: moveDistance, spd: moveSpeed });
+                        break;
+                    case 's':
+                        await robot.moveRelative({ dy: -moveDistance, spd: moveSpeed });
+                        break;
+                    case 'a':
+                        await robot.moveRelative({ dx: -moveDistance, spd: moveSpeed });
+                        break;
+                    case 'd':
+                        await robot.moveRelative({ dx: moveDistance, spd: moveSpeed });
+                        break;
+                    case 'q':
+                        await robot.moveRelative({ dz: moveDistance, spd: moveSpeed });
+                        break;
+                    case 'z':
+                        await robot.moveRelative({ dz: -moveDistance, spd: moveSpeed });
+                        break;
+                    case 'e':
+                        await robot.openClamp();
+                        console.log('Clamp opened');
+                        break;
+                    case 'r':
+                        await robot.closeClamp();
+                        console.log('Clamp closed');
+                        break;
+                    case 'x':
+                        rl.close();
+                        return;
+                    default:
+                        console.log('Invalid input');
+                        return;
+                }
 
-        // Open the clamp
-        await robot.openClamp();
-        console.log('Clamp opened');
+                console.log('New position:', robot.getPosition());
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
 
-        // Move to a specific position
-        await robot.sendCommand(235, 0, 234, 1, 0.25);
-        console.log('New position after absolute move:', robot.getPosition());
-
-        // Close the clamp
-        await robot.closeClamp();
-        console.log('Clamp closed');
-
-        const newStatus = await robot.getStatus();
-        console.log('Final status:', newStatus);
-        console.log('Final position:', robot.getPosition());
-        console.log('Final torque values:', robot.getTorqueValues());
+        rl.on('close', () => {
+            console.log('Exiting robot control');
+            process.exit(0);
+        });
     } catch (error) {
         console.error('Error:', error);
+        rl.close();
     }
 }
 
