@@ -105,7 +105,8 @@ export class RobotControl {
         return { torB: this.torB, torS: this.torS, torE: this.torE, torH: this.torH };
     }
 
-    async moveRelative(dx: number, dy: number, dz: number, spd: number): Promise<void> {
+    async moveRelative(options: { dx?: number; dy?: number; dz?: number; spd: number }): Promise<void> {
+        const { dx = 0, dy = 0, dz = 0, spd } = options;
         const newX = this.x + dx;
         const newY = this.y + dy;
         const newZ = this.z + dz;

@@ -10,8 +10,12 @@ async function main() {
         console.log('Initial torque values:', robot.getTorqueValues());
 
         // Move relative to current position
-        await robot.moveRelative(10, 20, 30, 0.25);
+        await robot.moveRelative({ dx: 10, dy: 20, dz: 30, spd: 0.25 });
         console.log('New position after relative move:', robot.getPosition());
+
+        // Move only in x direction
+        await robot.moveRelative({ dx: 15, spd: 0.25 });
+        console.log('New position after moving only in x:', robot.getPosition());
 
         // Open the clamp
         await robot.openClamp();
