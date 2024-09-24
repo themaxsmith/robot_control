@@ -183,4 +183,8 @@ export class RobotControl extends EventEmitter {
   async closeClamp(): Promise<void> {
     return this.sendCommand(this.x, this.y, this.z, 0, 0.25);
   }
+
+  async goto(x: number, y: number, z: number, spd: number): Promise<void> {
+    return this.sendCommand(x, y, z, this.t, spd);
+  }
 }

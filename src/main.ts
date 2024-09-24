@@ -13,6 +13,7 @@ async function main() {
   console.log("a/d: move left/right");
   console.log("q/z: move up/down");
   console.log("e/r: open/close clamp");
+  console.log("g: goto (x,y,z)");
   console.log("x: exit");
 
   try {
@@ -56,12 +57,22 @@ async function main() {
             await robot.closeClamp();
             console.log("Clamp closed");
             break;
+          case "g":
+            rl.question("Enter x y z (space-separated): ", async (answer) => {
+              const [x, y, z] = answer.split(" ").map(Number);
+              if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+                await robot.goto(x, y, z, moveSpeed);
+                console.log(`Moving to (${x}, ${y}, ${z})`);
+              } else {
+                console.log("Invalid coordinates");
+              }
+            });
+            break;
           case "x":
             rl.close();
             return;
           default:
             console.log("Invalid input");
-            return;
         }
       } catch (error) {
         console.error("Error:", error);
