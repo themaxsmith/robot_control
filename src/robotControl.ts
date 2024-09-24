@@ -52,7 +52,6 @@ export class RobotControl extends EventEmitter {
   private startListening(): void {
     this.serialPort.on("data", (data: Buffer) => {
       this.dataBuffer += data.toString();
-      console.log("Data buffer:", this.dataBuffer);
       let endIndex: number;
       while ((endIndex = this.dataBuffer.indexOf("}")) !== -1) {
         const jsonString = this.dataBuffer.slice(0, endIndex + 1);
