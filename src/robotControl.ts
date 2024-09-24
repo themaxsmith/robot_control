@@ -117,6 +117,7 @@ export class RobotControl extends EventEmitter {
     this.z = z;
     this.t = t;
     const command = JSON.stringify({ T: 104, x, y, z, t, spd }) + "\n";
+
     return new Promise((resolve, reject) => {
       this.serialPort.write(command, (err) => {
         if (err) {
