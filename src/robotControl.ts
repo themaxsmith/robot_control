@@ -113,7 +113,7 @@ export class RobotControl {
     }
 
     async openClamp(): Promise<void> {
-        const command = JSON.stringify({ T: 106, V: 1 });
+        const command = JSON.stringify({ t: 106, V: 1 });
         return new Promise((resolve, reject) => {
             this.serialPort.write(command, (err) => {
                 if (err) {
@@ -126,7 +126,7 @@ export class RobotControl {
     }
 
     async closeClamp(): Promise<void> {
-        const command = JSON.stringify({ T: 106, V: 0 });
+        const command = JSON.stringify({ t: 106, V: 0 });
         return new Promise((resolve, reject) => {
             this.serialPort.write(command, (err) => {
                 if (err) {
