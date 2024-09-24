@@ -60,15 +60,20 @@ async function main() {
             console.log("Clamp closed");
             break;
           case "f":
-            rl.question("Enter relative clamp opening amount (-1 to 1): ", async (answer) => {
-              const amount = parseFloat(answer);
-              if (!isNaN(amount) && amount >= -1 && amount <= 1) {
-                await robot.openClampRelative(amount);
-                console.log(`Clamp opened relatively by ${amount}`);
-              } else {
-                console.log("Invalid amount. Please enter a number between -1 and 1.");
+            rl.question(
+              "Enter relative clamp opening amount (0 to 100): ",
+              async (answer) => {
+                const amount = parseFloat(answer);
+                if (!isNaN(amount) && amount >= 0 && amount <= 100) {
+                  await robot.openClampRelative(amount);
+                  console.log(`Clamp opened relatively by ${amount}`);
+                } else {
+                  console.log(
+                    "Invalid amount. Please enter a number between -1 and 1."
+                  );
+                }
               }
-            });
+            );
             break;
           case "g":
             rl.question("Enter x y z (space-separated): ", async (answer) => {
