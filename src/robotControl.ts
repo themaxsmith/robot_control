@@ -1,4 +1,5 @@
 import { SerialPort } from "serialport";
+import { EventEmitter } from "events";
 
 interface RobotStatus {
   T: number;
@@ -15,7 +16,7 @@ interface RobotStatus {
   torH: number;
 }
 
-export class RobotControl {
+export class RobotControl extends EventEmitter {
   private x: number;
   private y: number;
   private z: number;
@@ -28,8 +29,10 @@ export class RobotControl {
   private torE: number;
   private torH: number;
   private serialPort: SerialPort;
+  private dataBuffer: string;
 
   constructor(portName: string) {
+    super();
     this.x = 0;
     this.y = 0;
     this.z = 0;
@@ -41,7 +44,27 @@ export class RobotControl {
     this.torS = 0;
     this.torE = 0;
     this.torH = 0;
+    this.dataBuffer = "";
     this.serialPort = new SerialPort({ path: portName, baudRate: 115200 });
+    this.startListening();
+  }
+
+  private startListening(): void {
+    this.serialPort.on("data", (data: Buffer) => {
+      this.dataBuffer += data.toString();
+      let endIndex: number;
+      while ((endIndex = this.dataBuffer.indexOf("}")) !== -1) {
+        const jsonString = this.dataBuffer.slice(0, endIndex + 1);
+        this.dataBuffer = this.dataBuffer.slice(endIndex + 1);
+        try {
+          const status: RobotStatus = JSON.parse(jsonString);
+          this.updateStatus(status);
+          this.emit("status", status);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      }
+    });
   }
 
   async getStatus(): Promise<RobotStatus> {
@@ -51,16 +74,17 @@ export class RobotControl {
         if (err) {
           reject(err);
         } else {
-          this.serialPort.once("data", (data) => {
-            try {
-              const status: RobotStatus = JSON.parse(data.toString());
-              this.updateStatus(status);
-              console.log("Status:", status);
-              resolve(status);
-            } catch (parseError) {
-              reject(parseError);
-            }
-          });
+          const timeout = setTimeout(() => {
+            reject(new Error("Status request timed out"));
+          }, 5000);
+
+          const statusHandler = (status: RobotStatus) => {
+            clearTimeout(timeout);
+            this.removeListener("status", statusHandler);
+            resolve(status);
+          };
+
+          this.once("status", statusHandler);
         }
       });
     });

@@ -19,6 +19,10 @@ async function main() {
     await robot.getStatus();
     console.log("Initial position:", robot.getPosition());
 
+    robot.on("status", (status) => {
+      console.log("Updated status:", status);
+    });
+
     rl.on("line", async (input) => {
       const key = input.toLowerCase();
       const moveDistance = 2; // Adjust this value as needed
@@ -59,8 +63,6 @@ async function main() {
             console.log("Invalid input");
             return;
         }
-
-        console.log("New position:", robot.getPosition());
       } catch (error) {
         console.error("Error:", error);
       }
